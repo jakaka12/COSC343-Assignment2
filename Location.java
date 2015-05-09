@@ -4,40 +4,40 @@
  * Purpose: 
  * 
  * @author: Jazlyn Akaka
- * @version: 29/4/15
+ * @version: 9/5/15
  */
 
 import java.util.*;
 
 public class Location{
-	private int row, col;
+    private int x, y;
 
-	/**
-   	 * CONSTRUCTOR: Creates a Location
-   	 */
-	public Location(int rowIndex, int colIndex){
-		row = rowIndex;
-		col = colIndex; 
+    /**
+     * CONSTRUCTOR: Creates a Location
+     */
+    public Location(int xIndex, int yIndex){
+	x = xIndex;
+	y = yIndex; 
 		
-	}
+    }
 
-	public int getRow(){
-		return row;
-	}
+    public int getX(){
+	return x;
+    }
 
-	public int getCol(){
-		return col;
-	}
+    public int getY(){
+	return y;
+    }
 
-	public void setRow(int newRow){
-		row = newRow;
-	}
+    public void setX(int newX){
+	x = newX;
+    }
 
-	public void setCol(int newCol){
-		col = newCol;
-	}
+    public void setCol(int newY){
+	y = newY;
+    }
 
-	public String toString(){
-		return "[location = (" + row + "," + col + ")]";
-	}
+    public String toString(){
+	return "[location = (" + x + "," + y + ")]";
+    }
 }
