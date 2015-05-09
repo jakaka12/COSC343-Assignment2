@@ -4,10 +4,11 @@
  * Purpose: Creates the world in which Creatures try to survive by eating strawberries and avoiding mushrooms and monsters.
  * 
  * @author: Jazlyn Akaka
- * @version: 7/5/15
+ * @version: 9/5/15
  */
 
 import java.util.*;
+import java.lang.*;
 
 public class SpeciesWorld{
     private int[][] strawb_array;
@@ -116,10 +117,169 @@ public class SpeciesWorld{
     /** A method that checks the contents of the cell the creature is in.
      *  
      */
-    public void senseCurrent(Creature c){
+    public void senseCurrent(Location l){
 	
     }
+
+    /** A method that checks for the presence of strawberries in the given location
+     *  @param The location that needs checking
+     *  @return A boolean; true if strawberry is in the cell, false if not
+     */
+    public boolean strawb_present(Location l){
+	return map[l.getX()][l.getY()]==3;
+    }
+
+    /** A method that checks for the presence of mushrooms in the given location
+     *  @param The location that needs checking
+     *  @return A boolean; true if mushroom is in the cell, false if not
+     */
+    public boolean mushroom_present(Location l){
+	return map[l.getX()][l.getY()]==4;
+    }
+
+    /** A method that checks for the presence of creature in the given location
+     *  @param The location that needs checking
+     *  @return A boolean; true if creature is in the cell, false if not
+     */
+    public boolean creature_present(Location l){
+	return map[l.getX()][l.getY()]==1;
+    }
+
+    /** A method that checks for the presence of monsters in the given location
+     *  @param The location that needs checking
+     *  @return A boolean; true if monster is in the cell, false if not
+     */
+    public boolean monster_present(Location l){
+	return map[l.getX()][l.getY()]==2;
+    }
+
+    /** A method that returns the location of the nearest strawberry.
+     * @param The location that is center of the neighbourhood
+     * @return A Location of where the nearest strawberry is. If there are no strawberries,
+     * it returns the original location. If there are multiple nearest strawberries, it 
+     * randomly returns one of their locations.
+     */
+    public Location nearest_strawb(Location l){
+	Random rand = new Random();
+	Location current, result;
+	List<Location> locList = new ArrayList<Location>();
+	for (int x = l.getX()-1; x<l.getX()+2; x++){
+	    for (int y = l.getY()-1; y<l.getY()+2;y++){
+		current = new Location(x,y);
+		if (strawb_present(current)){
+		    locList.add(current);
+		}
+	    }
+	}
+	if (locList.size()>0){
+	    if (locList.size()>1){
+		return locList.get(rand.nextInt(locList.size()));
+	    }else{
+		return locList.get(0);
+	    }
+	}else{
+	    return l;
+	}
+    }
+
+    /** A method that returns the location of the nearest mushroom.
+     * @param The location that is center of the neighbourhood
+     * @return A Location of where the nearest mushroom is. If there are no mushrooms,
+     * it returns the original location. If there are multiple nearest mushrooms, it 
+     * randomly returns one of their locations.
+     */
+    public Location nearest_mushroom(Location l){
+	Random rand = new Random();
+	Location current, result;
+	List<Location> locList = new ArrayList<Location>();
+	for (int x = l.getX()-1; x<l.getX()+2; x++){
+	    for (int y = l.getY()-1; y<l.getY()+2;y++){
+		current = new Location(x,y);
+		if (mushroom_present(current)){
+		    locList.add(current);
+		}
+	    }
+	}
+	if (locList.size()>0){
+	    if (locList.size()>1){
+		return locList.get(rand.nextInt(locList.size()));
+	    }else{
+		return locList.get(0);
+	    }
+	}else{
+	    return l;
+	}
+    }
+
+    /** A method that returns the location of the nearest creature.
+     * @param The location that is center of the neighbourhood
+     * @return A Location of where the nearest creature is. If there are no creature,
+     * it returns the original location. If there are multiple nearest creature, it 
+     * randomly returns one of their locations.
+     */
+    public Location nearest_creature(Location l){
+	Random rand = new Random();
+	Location current, result;
+	List<Location> locList = new ArrayList<Location>();
+	for (int x = l.getX()-1; x<l.getX()+2; x++){
+	    for (int y = l.getY()-1; y<l.getY()+2;y++){
+		current = new Location(x,y);
+		if (creature_present(current)){
+		    locList.add(current);
+		}
+	    }
+	}
+	if (locList.size()>0){
+	    if (locList.size()>1){
+		return locList.get(rand.nextInt(locList.size()));
+	    }else{
+		return locList.get(0);
+	    }
+	}else{
+	    return l;
+	}
+    }
+
+    /** A method that returns the location of the nearest monster.
+     * @param The location that is center of the neighbourhood
+     * @return A Location of where the nearest monster is. If there are no monster,
+     * it returns the original location. If there are multiple nearest monster, it 
+     * randomly returns one of their locations.
+     */
+    public Location nearest_monster(Location l){
+	Random rand = new Random();
+	Location current, result;
+	List<Location> locList = new ArrayList<Location>();
+	for (int x = l.getX()-1; x<l.getX()+2; x++){
+	    for (int y = l.getY()-1; y<l.getY()+2;y++){
+		current = new Location(x,y);
+		if (monster_present(current)){
+		    locList.add(current);
+		}
+	    }
+	}
+	if (locList.size()>0){
+	    if (locList.size()>1){
+		return locList.get(rand.nextInt(locList.size()));
+	    }else{
+		return locList.get(0);
+	    }
+	}else{
+	    return l;
+	}
+    }
+
+
     
+    /** A method that checks the creature's neighbourhood
+     *  and determines which direction the creature should move.
+     *  The neighbourhood includes the location of the creature and 
+     *  the surrounding cells.
+     */
+    public void senseHood(Location l){
+	
+    }
+
     
     
     
