@@ -1,7 +1,8 @@
 /**
  * COSC343 Assignment 2
  * Location.java
- * Purpose: 
+ * Purpose: Create location object (will be used by other classes such as 
+ *          Creature, Monster, and SpeciesWorld
  * 
  * @author: Jazlyn Akaka
  * @version: 9/5/15
