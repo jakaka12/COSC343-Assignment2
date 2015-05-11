@@ -12,16 +12,16 @@ import java.util.*;
 import java.lang.*;
 
 public class SpeciesWorld{
-    private int[][] strawb_array;
-    private int[][] mushroom_array;
-    private int[][] creature_array;
-    private int[][] monster_array;
-    private int[][] map;
-    private Creature[] creatures;
-    private Monster[] monsters;
-    private int energyLoss;
-    private int energyGain;
-    private int dimx, dimy, numCreatures, numMonsters, numStrawb, numMush, energy;
+    public int[][] strawb_array;
+    public int[][] mushroom_array;
+    public int[][] creature_array;
+    public int[][] monster_array;
+    public int[][] map;
+    public Creature[] creatures;
+    public Monster[] monsters;
+    public int energyLoss;
+    public int energyGain;
+    public int dimx, dimy, numCreatures, numMonsters, numStrawb, numMush, energy;
     private Location strawbLoc, mushLoc, creLoc, monLoc;
 
     /**
@@ -32,8 +32,8 @@ public class SpeciesWorld{
     public SpeciesWorld(){
 	dimx = 10;
 	dimy = 10;
-        numCreatures = 12;
-	numMonsters = 12;
+        numCreatures = 10;
+	numMonsters = 10;
 	numStrawb = 25;
 	numMush = 25; 
 	energy = 30; //starting energy_level of creatures
@@ -50,12 +50,12 @@ public class SpeciesWorld{
     
 	//this 2d array keeps track of all creatures, monsters, stawberries, 
 	//and mushrooms so that different types don't get placed in the same location
-	// 1: creatures
-	// 2: monsters
-	// 3: strawberries
-	// 4: mushrooms
+	// 1: creatures --> Color.white
+	// 2: monsters --> Color.black
+	// 3: strawberries --> Color.red
+	// 4: mushrooms --> Color.orange
 	int[][] map = new int[dimx][dimy];
-    
+	
 	int randx = rand.nextInt(dimx);
 	int randy = rand.nextInt(dimy);
     
@@ -120,7 +120,7 @@ public class SpeciesWorld{
 	//print out values in the map to see positions of creatures, monsters, strawberries and mushrooms
 	for (int i = 0; i<dimx; i++){
 	    for (int j = 0; j<dimy; j++){
-		System.out.print(map[i][j]);
+		System.out.print(map[j][i]);
 	    }
 	    System.out.println("");
 	}
@@ -246,6 +246,16 @@ public class SpeciesWorld{
 	}
 	Creature dead = new Creature(0,0,0);
 	return dead;
+    }
+
+
+    /** A method that gets the value in the map
+     *  This is for use of initializing the GUI
+     *  @param the x and y coordinates
+     *  @return returns a value [0,4] that represents the object at that location
+     */
+    public int getContents(int x, int y){
+	return map[x][y];
     }
 
     /******************** SENSORY METHODS **************************/
@@ -984,6 +994,7 @@ public class SpeciesWorld{
 	}
     }
 
+
     
     /******************** MAIN METHOD **************************/
     
@@ -997,14 +1008,6 @@ public class SpeciesWorld{
 	System.out.println(world.creatures[0]);
       	world.doAction(world.creatures[0]);
 	System.out.println(world.creatures[0]);
-
-
-
-
-
-
-
-
 
 	/*******PREVIOUS TESTING*************/
 	
