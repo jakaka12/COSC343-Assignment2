@@ -18,6 +18,7 @@ public class SpeciesWorld{
     public int[][] monster_array;
     public int[][] map;
     public Creature[] creatures;
+    public Chromosome[] babyChroms;
     public Monster[] monsters;
     public int energyLoss;
     public int energyGain;
@@ -36,12 +37,13 @@ public class SpeciesWorld{
 	numMonsters = 10;
 	numStrawb = 25;
 	numMush = 25; 
-	energy = 30; //starting energy_level of creatures
-	energyLoss = 2; //energy lost by moving
+	energy = 20; //starting energy_level of creatures
+	energyLoss = 1; //energy lost by moving
 	energyGain = 4; //energy gained by eating a strawberry
     
 	Random rand = new Random();
 	creatures = new Creature[numCreatures];
+	babyChroms = new Chromosome[numCreatures];
 	monsters = new Monster[numMonsters];
 	strawb_array = new int[dimx][dimy];
 	mushroom_array = new int[dimx][dimy];
@@ -124,6 +126,113 @@ public class SpeciesWorld{
 	    }
 	    System.out.println("");
 	}
+	//	System.out.println(creatures[0]);
+	
+    }
+
+
+        /**
+     * CONSTRUCTOR: Creates a world that is occupied by Creatures, Monsters, strawberries and mushrooms.
+     * //this constructor is used after the first generation has gone through
+     * 
+     */
+    public SpeciesWorld(Chromosome[] nextGen){
+	dimx = 10;
+	dimy = 10;
+        numCreatures = 10;
+	numMonsters = 10;
+	numStrawb = 25;
+	numMush = 25; 
+	energy = 20; //starting energy_level of creatures
+	energyLoss = 1; //energy lost by moving
+	energyGain = 4; //energy gained by eating a strawberry
+    
+	Random rand = new Random();
+	creatures = new Creature[numCreatures];
+	babyChroms = nextGen;
+	monsters = new Monster[numMonsters];
+	strawb_array = new int[dimx][dimy];
+	mushroom_array = new int[dimx][dimy];
+	creature_array = new int[dimx][dimy];
+	monster_array = new int[dimx][dimy];
+    
+	//this 2d array keeps track of all creatures, monsters, stawberries, 
+	//and mushrooms so that different types don't get placed in the same location
+	// 1: creatures --> Color.white
+	// 2: monsters --> Color.black
+	// 3: strawberries --> Color.red
+	// 4: mushrooms --> Color.orange
+	int[][] map = new int[dimx][dimy];
+	
+	int randx = rand.nextInt(dimx);
+	int randy = rand.nextInt(dimy);
+    
+	//create each creature in a cell that isn't occupied by any others
+	for (int c = 0; c<creatures.length; c++){
+	    while (map[randx][randy]>0){
+		randx = rand.nextInt(dimx);
+		randy = rand.nextInt(dimy);
+	    }
+	    creatures[c] = new Creature(energy,randx,randy,babyChroms[0]);
+	    creature_array[randx][randy]++;
+	    map[randx][randy]=1;
+	}
+    
+	//create each monster in a cell that isn't occupied by any others
+	for (int m = 0; m<monsters.length; m++){
+	    while (map[randx][randy]>0){
+		randx = rand.nextInt(dimx);
+		randy = rand.nextInt(dimy);
+	    }
+	    monsters[m] = new Monster(randx,randy);
+	    monster_array[randx][randy]++;
+	    map[randx][randy]=2;
+	}
+
+	//place the strawberries in empty cells or cells that have strawberries
+	for (int s = 0; s<numStrawb; s++){
+	    boolean sNotFound = true;
+	    while (map[randx][randy]>0&&sNotFound){
+		randx = rand.nextInt(dimx);
+		randy = rand.nextInt(dimy);
+		if (map[randx][randy]==3)
+		    sNotFound = false;
+	    }
+	    strawb_array[randx][randy]++;
+	    map[randx][randy]=3;
+	}
+
+	//******TESTING
+	// print out values in strawb_array to confirm correct placement and incrementing of strawberries
+	// for (int a = 0; a<dimx; a++){
+	//     for (int b = 0; b<dimy; b++){
+	// 	System.out.print(strawb_array[a][b]);
+	//     }
+	//     System.out.println("");
+	// }
+    
+	//place the mushrooms in empty cells or cells that have mushrooms
+	for (int k = 0; k<numMush; k++){
+	    boolean mNotFound = true;
+	    while (map[randx][randy]>0&&mNotFound){
+		randx = rand.nextInt(dimx);
+		randy = rand.nextInt(dimy);
+		if (map[randx][randy]==4)
+		    mNotFound = false;
+	    }
+	    mushroom_array[randx][randy]++;
+	    map[randx][randy]=4;
+	}
+
+	//*******TESTING
+	//print out values in the map to see positions of creatures, monsters, strawberries and mushrooms
+	for (int i = 0; i<dimx; i++){
+	    for (int j = 0; j<dimy; j++){
+		System.out.print(map[j][i]);
+	    }
+	    System.out.println("");
+	}
+	//	System.out.println(creatures[0]);
 	
     }
     
@@ -145,6 +254,7 @@ public class SpeciesWorld{
     
 	Random rand = new Random();
 	creatures = new Creature[numCreatures];
+	babyChroms = new Chromosome[numCreatures];
 	monsters = new Monster[numMonsters];
 	strawb_array = new int[dimx][dimy];
 	mushroom_array = new int[dimx][dimy];
@@ -244,8 +354,8 @@ public class SpeciesWorld{
 		return creatures[i];
 	    }
 	}
-	Creature dead = new Creature(0,0,0);
-	return dead;
+	Creature c = new Creature(0,0,0);
+	return c;
     }
 
 
@@ -326,7 +436,7 @@ public class SpeciesWorld{
 		result = locList.getFirst();
 	    }
 	}
-	System.out.println("nearest strawb:" + result);
+	//	System.out.println("nearest strawb:" + result);
 	return result;
     }
 
@@ -359,7 +469,7 @@ public class SpeciesWorld{
 		result = locList.getFirst();
 	    }
 	}
-	System.out.println("nearest mush:" + result);
+	//	System.out.println("nearest mush:" + result);
 	return result;
     }
 
@@ -394,7 +504,7 @@ public class SpeciesWorld{
 		result = locList.getFirst();
 	    }
 	}
-	System.out.println("nearest creature:" + result);
+	//	System.out.println("nearest creature:" + result);
 	return result;
     }
 
@@ -428,11 +538,15 @@ public class SpeciesWorld{
 		result = locList.getFirst();
 	    }
 	}
-	System.out.println("nearest monster:" + result);
+	//	System.out.println("nearest monster:" + result);
 	return result;
     }
     
     /******************** CREATURE ACTION METHODS **********************/
+
+    /** Note: 11/5/15 Directions of these action methods are relative. north might not necessarily 
+     *  be in the direction above the given object when looking at the gui...
+     */
 
     /** A method that moves creature North one cell and decrements energy
      *  @param A creature to move
@@ -509,9 +623,12 @@ public class SpeciesWorld{
 	int creatureY = c.getLoc().getY();
 	
 	Location north = new Location(creatureX-1,creatureY);
-	Location south = new Location(creatureY+1,creatureY);
+	Location south = new Location(creatureX+1,creatureY);
 	Location east = new Location(creatureX,creatureY+1);
 	Location west = new Location(creatureX,creatureY-1);
+
+	//	System.out.println(north + "\n" + south + "\n" + east + "\n" + west);
+	//	System.out.println("creatureX:" + creatureX + " creatureY:" + creatureY);
 	
 	LinkedList<Location> direction = new LinkedList<Location>();
 	if (creatureX>0) direction.add(north);
@@ -526,7 +643,8 @@ public class SpeciesWorld{
 	c.setLoc(direction.get(rand.nextInt(direction.size())));
 
 	//update creature_array and energy level
-	creature_array[c.getLoc().getX()][c.getLoc().getX()]++;
+	//	System.out.println(c.getLoc().getX() + "," + c.getLoc().getY());
+	creature_array[c.getLoc().getX()][c.getLoc().getY()]++;
 	c.loseEnergy(energyLoss);	
     }
 
@@ -546,33 +664,34 @@ public class SpeciesWorld{
 	int creatureY = c.getLoc().getY();
 	int locX = l.getX();
 	int locY = l.getY();
-	    
-	if (creatureX!=locX&&creatureY!=locY){
-	    creature_array[creatureX][creatureY]--;
-	    //if the location has either X or Y in common with the creature's
-	    //current location, then it will move to the specified location
-	    if (creatureX==locX||creatureY==locY){
-		c.setLoc(l);
-	    }else{
-		if (locX == creatureX-1){
-		    //Move North
-		    Location north = new Location(creatureX-1, creatureY);
-		    c.setLoc(north);
-		}else{
-		    //Move South
-		    Location south = new Location(creatureX+1, creatureY);
-		    c.setLoc(south);
-		}
-		
-	    }
-	    
-	    //update creature_array    
-	    creature_array[c.getLoc().getX()][c.getLoc().getY()]++;
-	    
-	    //update energy level
-	    c.loseEnergy(energyLoss);
-	}
 
+	if (locX>-1&&locY>-1){
+	    if (creatureX!=locX&&creatureY!=locY){
+		creature_array[creatureX][creatureY]--;
+		//if the location has either X or Y in common with the creature's
+		//current location, then it will move to the specified location
+		if (creatureX==locX||creatureY==locY){
+		    c.setLoc(l);
+		}else{
+		    if (locX == creatureX-1){
+			//Move North
+			Location north = new Location(creatureX-1, creatureY);
+			c.setLoc(north);
+		    }else{
+			//Move South
+			Location south = new Location(creatureX+1, creatureY);
+			c.setLoc(south);
+		    }
+		
+		}
+	    
+		//update creature_array    
+		creature_array[c.getLoc().getX()][c.getLoc().getY()]++;
+	    
+		//update energy level
+		c.loseEnergy(energyLoss);
+	    }
+	}
     }
 
     /**********I THINK SOMETHING IS WRONG WITH THIS METHOD.. NEED TO FIX***********/
@@ -591,100 +710,103 @@ public class SpeciesWorld{
 	//only move the creature if its current location is
 	//different from the one provided
 	
-	    int creatureX = c.getLoc().getX();
-	    int creatureY = c.getLoc().getY();
-	    int locX = l.getX();
-	    int locY = l.getY();
-
+	int creatureX = c.getLoc().getX();
+	int creatureY = c.getLoc().getY();
+	int locX = l.getX();
+	int locY = l.getY();
+	if (locX>-1&&locY>-1){
 	    if (creatureX!=locX&&creatureY!=locY){
 	    
-	    Location north = new Location(creatureX-1,creatureY);
-	    Location south = new Location(creatureY+1,creatureY);
-	    Location east = new Location(creatureX,creatureY+1);
-	    Location west = new Location(creatureX,creatureY-1);
+		Location north = new Location(creatureX-1,creatureY);
+		Location south = new Location(creatureY+1,creatureY);
+		Location east = new Location(creatureX,creatureY+1);
+		Location west = new Location(creatureX,creatureY-1);
 	    
-	    creature_array[creatureX][creatureY]--;
-	    //if the location has either X or Y in common with the creature's
-	    //current location, then it will move directly away from the specified location
+		creature_array[creatureX][creatureY]--;
+		//if the location has either X or Y in common with the creature's
+		//current location, then it will move directly away from the specified location
 
 
-	    //can probably simplify this, but for now, it accounts for the different cases...
-	    //not the most specific implementation when the creature is stuck in a corner or on an edge...
-	    if (creatureX==locX){
-		//inline along X'
-		if (locY>creatureY){
-		    //location to the east of creature
-		    if (west.getY()>=0){
-			c.setLoc(west);
-		    }else if(south.getX()<10){
-			c.setLoc(south);
-		    }else if(north.getX()>=0){
-			c.setLoc(north);
+		//can probably simplify this, but for now, it accounts for the different cases...
+		//not the most specific implementation when the creature is stuck in a corner or on an edge...
+		if (creatureX==locX){
+		    //inline along X'
+		    if (locY>creatureY){
+			//location to the east of creature
+			if (west.getY()>=0){
+			    c.setLoc(west);
+			}else if(south.getX()<10){
+			    c.setLoc(south);
+			}else if(north.getX()>=0){
+			    c.setLoc(north);
+			}
+		    }else{
+			//location to the west of creature
+			if (east.getY()<10){
+			    c.setLoc(east);
+			}else if(south.getX()<10){
+			    c.setLoc(south);
+			}else if(north.getX()>=0){
+			    c.setLoc(north);
+			}
+		    }
+		}else if(creatureY==locY){
+		    //inline along Y's
+		    if (locX>creatureX){
+			//location to south of creature
+			if (north.getX()>=0){
+			    c.setLoc(north);
+			}else if(east.getY()<10){
+			    c.setLoc(east);
+			}else if(west.getY()>=0){
+			    c.setLoc(west);
+			}
+		    }else{
+			//location to north of creature
+			if (south.getX()>=0){
+			    c.setLoc(south);
+			}else if (east.getY()<10){
+			    c.setLoc(east);
+			}else if (west.getY()>=0){
+			    c.setLoc(west);
+			}
 		    }
 		}else{
-		    //location to the west of creature
-		    if (east.getY()<10){
-			c.setLoc(east);
-		    }else if(south.getX()<10){
-			c.setLoc(south);
-		    }else if(north.getX()>=0){
-			c.setLoc(north);
+		    //location is diagonal to creature
+		    if (locX == creatureX-1){
+			//location is north of creature
+			if (south.getX()<10){
+			    c.setLoc(south);
+			}else if(east.getY()<10){
+			    c.setLoc(east);
+			}else if(west.getY()>=0){
+			    c.setLoc(west);
+			}
+		    }else{
+			//location is south of creature
+			if (north.getX()>=0){
+			    c.setLoc(north);
+			}else if(east.getY()<10){
+			    c.setLoc(east);
+			}else if(west.getY()>=0){
+			    c.setLoc(west);
+			}
 		    }
 		}
-	    }else if(creatureY==locY){
-		//inline along Y's
-		if (locX>creatureX){
-		    //location to south of creature
-		    if (north.getX()>=0){
-			c.setLoc(north);
-		    }else if(east.getY()<10){
-			c.setLoc(east);
-		    }else if(west.getY()>=0){
-			c.setLoc(west);
-		    }
-		}else{
-		    //location to north of creature
-		    if (south.getX()>=0){
-			c.setLoc(south);
-		    }else if (east.getY()<10){
-			c.setLoc(east);
-		    }else if (west.getY()>=0){
-			c.setLoc(west);
-		    }
-		}
-	    }else{
-		//location is diagonal to creature
-		if (locX == creatureX-1){
-		    //location is north of creature
-		    if (south.getX()<10){
-			c.setLoc(south);
-		    }else if(east.getY()<10){
-			c.setLoc(east);
-		    }else if(west.getY()>=0){
-			c.setLoc(west);
-		    }
-		}else{
-		    //location is south of creature
-		    if (north.getX()>=0){
-			c.setLoc(north);
-		    }else if(east.getY()<10){
-			c.setLoc(east);
-		    }else if(west.getY()>=0){
-			c.setLoc(west);
-		    }
-		}
+		    
 		
+	    
+		//update creature_array    
+		creature_array[c.getLoc().getX()][c.getLoc().getY()]++;
+	    
+		//update energy level
+		c.loseEnergy(energyLoss);
+	    
+	    }else{
+		//randomly move the creature if it is in the same location as what it wants
+		//to move away from. No matter which direction it goes, it will be moving away
+		moveCreature(c);
 	    }
-	    
-	    //update creature_array    
-	    creature_array[c.getLoc().getX()][c.getLoc().getY()]++;
-	    
-	    //update energy level
-	    c.loseEnergy(energyLoss);
-	}else{
-	    //randomly move the creature if it is in the same location as what it wants
-	    //to move away from. No matter which direction it goes, it will be moving away
-	    moveCreature(c);
 	}
     }
 
@@ -743,7 +865,7 @@ public class SpeciesWorld{
 	//Add actions to list if the corresponding action from the chromosome is not ignore
 	if (hasStrawb){
 	    if (c.chromosome.getEatStrawb()){
-		System.out.println("eat Strawb " + weights[0]);
+		//		System.out.println("eat Strawb " + weights[0]);
 		action.add(0);
 		actionWeights[0] = weights[0];
 		actionMap.put(weights[0],0);
@@ -751,7 +873,7 @@ public class SpeciesWorld{
 	}
 	if (hasMush){
 	    if (c.chromosome.getEatMush()){
-		System.out.println("eat mush " + weights[1]);
+		//		System.out.println("eat mush " + weights[1]);
 		action.add(1);
 		actionWeights[1] = weights[1];
 		actionMap.put(weights[1],1);
@@ -759,7 +881,7 @@ public class SpeciesWorld{
 	}
 	if (strawbLoc.getX()>-1&&strawbLoc.getY()>-1){
 	    if (c.chromosome.getStrawbMove()>0){
-		System.out.println("move strawb " + weights[2]);
+		//		System.out.println("move strawb " + weights[2]);
 		action.add(2);
 		actionWeights[2] = weights[2];
 		actionMap.put(weights[2],2);
@@ -767,7 +889,7 @@ public class SpeciesWorld{
 	}
 	if (mushLoc.getX()>-1&&mushLoc.getY()>-1){
 	    if (c.chromosome.getMushMove()>0){
-		System.out.println("move mush " + weights[3]);
+		//		System.out.println("move mush " + weights[3]);
 		action.add(3);
 		actionWeights[3] = weights[3];
 		actionMap.put(weights[3],3);
@@ -776,7 +898,7 @@ public class SpeciesWorld{
 	if(monLoc.getX()>-1&&monLoc.getY()>-1){
 	    // System.out.println("chromosome value: " + c.chromosome.getMonsMove());
 	    if (c.chromosome.getMonsMove()>0){
-		System.out.println("move mon:" + weights[4]);
+		//		System.out.println("move mon:" + weights[4]);
 		action.add(4);
 		actionWeights[4] = weights[4];
 		actionMap.put(weights[4],4);
@@ -785,7 +907,7 @@ public class SpeciesWorld{
 	if(creLoc.getX()>-1&&creLoc.getY()>-1){
 	    //	    System.out.println("creatureLoc:" + creLoc + "chrome:" + c.chromosome.getCreMove());
 	    if (c.chromosome.getCreMove()>0){
-		System.out.println("move cre " + weights[5]);
+		//		System.out.println("move cre " + weights[5]);
 		action.add(5);
 		actionWeights[5] = weights[5];
 		actionMap.put(weights[5],5);
@@ -794,7 +916,7 @@ public class SpeciesWorld{
 	if (action.size()>0){
 	    //sort actionWeights and find the largest weight and then get the corresponding value
 	    Arrays.sort(actionWeights);
-	    System.out.println("action to perform " + actionMap.get(actionWeights[5]));
+	    //	    System.out.println("action to perform " + actionMap.get(actionWeights[5]));
 	    return actionMap.get(actionWeights[5]);
 	}else{
 	    return 6;
@@ -821,18 +943,18 @@ public class SpeciesWorld{
 	switch(action){
 	case 0:
 	case 1:
-	    System.out.println("eat");
+	    //	    System.out.println("eat");
 	    eat(c);
 	    break;
 	case 2:
-	    System.out.println("move on strawberry");
+	    //	    System.out.println("move on strawberry");
 	    switch(c.chromosome.getStrawbMove()){
 	    case 1:
-		System.out.println("move to strawb");
+		//		System.out.println("move to strawb");
 		moveCreatureTo(c,strawbLoc);
 		break;
 	    case 2:
-		System.out.println("move away from strawb");
+		//		System.out.println("move away from strawb");
 		moveCreatureAway(c,strawbLoc);
 		break;
 	    case 3: default:
@@ -841,14 +963,14 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 3:
-	    System.out.println("move on mushroom");
+	    //	    System.out.println("move on mushroom");
 	    switch(c.chromosome.getMushMove()){
 	    case 1:
-		System.out.println("move to mush");
+		//		System.out.println("move to mush");
 		moveCreatureTo(c,mushLoc);
 		break;
 	    case 2:
-		System.out.println("move away from mush");
+		//		System.out.println("move away from mush");
 		moveCreatureAway(c,mushLoc);
 		break;
 	    case 3: default:
@@ -857,14 +979,14 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 4:
-	    System.out.println("move on monster");
+	    //	    System.out.println("move on monster");
 	    switch(c.chromosome.getMonsMove()){
 	    case 1:
-		System.out.println("move to monster");
+		//		System.out.println("move to monster");
 		moveCreatureTo(c,monLoc);
 		break;
 	    case 2:
-		System.out.println("move away from monster");
+		//		System.out.println("move away from monster");
 		moveCreatureAway(c,monLoc);
 		break;
 	    case 3: default:
@@ -873,14 +995,14 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 5:
-	    System.out.println("move on creature");
+	    //	    System.out.println("move on creature");
 	    switch(c.chromosome.getCreMove()){
 	    case 1:
-		System.out.println("move to creature");
+		//		System.out.println("move to creature");
 		moveCreatureTo(c,creLoc);
 		break;
 	    case 2:
-		System.out.println("move away from creatures");
+		//		System.out.println("move away from creatures");
 		moveCreatureAway(c,creLoc);
 		break;
 	    case 3: default:
@@ -889,7 +1011,7 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 6:
-	    System.out.println("default action");
+	    //	    System.out.println("default action");
 	    switch(c.chromosome.getAction()){
 	    case 1:
 		moveNorth(c);
@@ -912,6 +1034,11 @@ public class SpeciesWorld{
 	    moveCreature(c);
 	    break;
 	}
+        int currentX = c.getLoc().getX();
+	int currentY = c.getLoc().getY();
+
+	if (monster_array[currentX][currentY]>0) c.kill();
+	
     }
     
 
@@ -920,16 +1047,15 @@ public class SpeciesWorld{
 
     /** A method that moves a creature North, South, East, or West.
      *  Creature will move in a random direction.
-     *  Will update creature_array, creature's location, and decrement
-     *  the creature's energy level.
-     *  @param A creature to move
+     *  Will update monster_array, monster's location
+     *  @param A monster to move
      */
     public void moveMonster(Monster m){
 	int monsterX = m.getLoc().getX();
 	int monsterY = m.getLoc().getY();
 	
 	Location north = new Location(monsterX-1,monsterY);
-	Location south = new Location(monsterY+1,monsterY);
+	Location south = new Location(monsterX+1,monsterY);
 	Location east = new Location(monsterX,monsterY+1);
 	Location west = new Location(monsterX,monsterY-1);
 	
@@ -946,7 +1072,7 @@ public class SpeciesWorld{
 	m.setLoc(direction.get(rand.nextInt(direction.size())));
 
 	//update creature_array and energy level
-	monster_array[m.getLoc().getX()][m.getLoc().getX()]++;
+	monster_array[m.getLoc().getX()][m.getLoc().getY()]++;
     }
 
     
@@ -958,14 +1084,16 @@ public class SpeciesWorld{
      *  If the location is diagonal to the monster's location, 
      *  the monster will either move North or South. 
      *
-     *  @param A creature to move, a location to head towards
+     *  @param A monster to move, a location to head towards
      */
     public void moveMonster(Monster m, Location l){
-
-	//only move the creature if its current location is
+	//	System.out.println("moveMonster");
+	//only move the monster if its current location is
 	//different from the one provided
 	
+	
 	if (!m.getLoc().equals(l)){
+	    //	    System.out.println("time to move");
 	    int monsterX = m.getLoc().getX();
 	    int monsterY = m.getLoc().getY();
 	    int locX = l.getX();
@@ -973,34 +1101,175 @@ public class SpeciesWorld{
 	    monster_array[monsterX][monsterY]--;
 	    //if the location has either X or Y in common with the monster's
 	    //current location, then it will move to the specified location
-	    if (monsterX==locX||monsterY==locY){
-		m.setLoc(l);
-	    }else{
-		if (locX == monsterX-1){
-		    //Move North
-		    Location north = new Location(monsterX-1, monsterY);
-		    m.setLoc(north);
+	    if (locX>-1&&locY>-1){
+		//		System.out.println("my location:" + m.getLoc() + "nearest:" + locX + "," + locY);
+		if (monsterX==locX||monsterY==locY){
+		    //		    System.out.println("move there");
+		    m.setLoc(l);
 		}else{
-		    //Move South
-		    Location south = new Location(monsterX+1, monsterY);
-		    m.setLoc(south);
+		    if (locX == monsterX-1){
+			//Move North
+			Location north = new Location(monsterX-1, monsterY);
+			m.setLoc(north);
+		    }else{
+			//Move South
+			Location south = new Location(monsterX+1, monsterY);
+			m.setLoc(south);
+		    }
 		}
-		
 	    }
 	    
 	    //update monster_array    
 	    monster_array[m.getLoc().getX()][m.getLoc().getY()]++;
-
+	    //	    System.out.println("update:" + monster_array[m.getLoc().getX()][m.getLoc().getY()]);
 	}
     }
 
+    /** A method that goes through all the creatures and makes them perform
+     *  an action. Also iterates through the monsters and moves them every
+     *  so often.
+     *
+     *  @param The number of timeSteps to go through for one population and 
+     *  the interval at which monsters should move. The greater the number
+     *  the less the monsters will move.
+     */
+    public void oneGen(int timeSteps, int interval){
+	int t = timeSteps; //one generation lives for 20 time steps
+	int monsterTime = interval; //when the iteration is divisible by this int, the monsters will move
+	for (int i = 0; i<t; i++){
+	    //	    System.out.println("i:" + i);
+	    for (int j = 0; j<creatures.length; j++){
+		//		System.out.println("j:" + j);
+		Creature c = creatures[i];
+		if (c.isAlive()){
+		    doAction(c);
+		}
+		    
+	    }
+	
+	    if (i%monsterTime==0){
+		for (int k = 0; k<monsters.length; k++){
+		    //		    System.out.println("k:" + k);
+		    Monster m = monsters[k];
+		    moveMonster(m,nearest_creature(m.getLoc()));
+		    int mX = m.getLoc().getX();
+		    int mY = m.getLoc().getY();
+		    while (creature_array[mX][mY]>0){
+			Creature cre = whichCreature(m.getLoc());
+		        cre.kill();
+			creature_array[mX][mY]--;
+		    }
+		}
+	    }
+	}
+
+	for (int n = 0; n<creatures.length; n++){
+	    System.out.println(creatures[n].getEnergyLevel());
+	}
+
+    }
+
+    /** Method calculates fitness of creatures and returns linkedlist of the fittest
+     *  ones. Hard coded to take the fittest third of the population, and
+     *  will not return any creatures that are dead. **ELITISM
+     *
+     *  @return a linkedlist of creatures that are the fittest in the population
+     */
+    //hard coding to take the fittest fourth of the population
+    public LinkedList<Creature> getFittest(){
+	LinkedList<Creature> result = new LinkedList<Creature>();
+
+	//fraction of fittest population that will make up the fittest creatures in the population
+	int d = 3;
+	
+	int k = numCreatures/d;
+
+	Hashtable<Double,Integer> fitMap = new Hashtable<Double,Integer>();
+	//make a new creature array to sort
+	//stores energy_levels of creatures
+        double[] sorted = new double[creatures.length];
+	for (int i = 0; i<sorted.length; i++){
+	    double energyLevel = creatures[i].getEnergyLevel();
+	    //don't want to add duplicates, so add a double if it's already in the table
+	    //this may alter the result slightly since the second creature will have a
+	    //better chance of being added to the result list
+	    if (energyLevel>0){
+		//only add to fitMap if not dead
+		while(fitMap.containsKey(energyLevel)){
+		    energyLevel+=0.1;
+		}
+		sorted[i] = energyLevel;
+		fitMap.put(energyLevel, i);
+	    }
+	}
+	Arrays.sort(sorted);
+	for (int j = sorted.length-1; j>0; j--){
+	    double fitness = sorted[j];
+	    if (fitness>0.9){
+		int index = fitMap.get(fitness);
+		//		System.out.println("index: " + index);
+
+		result.add(creatures[index]);
+		fitMap.remove(fitness);
+	    }
+	}
+
+	return result;
+	
+    }
+
+    /** Method selects two parents using something closer to the
+     *  roulette wheel selection method, and creates a new chromosome
+     *  for a future creature. ** Elitism ** Uses getFittest helper method to get parents.
+     *  the same creature parents could have multiple children.
+     *  
+     *  @param determine how many of the fittest creatures to get
+     *  the larger the denom, the fewer parents
+     */
+    public Chromosome makeBabyChrom(){
+	Chromosome result = new Chromosome();
+	Random rand = new Random();
+	LinkedList<Creature> fittest = getFittest();
+	int fitSize = fittest.size();
+	if (fitSize>1){
+	    int p1 = rand.nextInt(fitSize);
+	    int r = rand.nextInt(fitSize);
+	    while (r==p1) r = rand.nextInt(fitSize);
+	    int p2 = r;
+	    result = new Chromosome(fittest.get(p1),fittest.get(p2));
+	}
+	return result;
+	
+    }
+
+    /** This method creates a new population of creatures to be used in the next generation
+     *
+     *
+     */
+    public Chromosome[] nextGenChroms(){
+	Chromosome[] babies = new Chromosome[numCreatures];
+	for (int i = 0; i<babies.length; i++){
+	    babies[i] = makeBabyChrom();
+	}
+	return babies;
+    }
 
     
     /******************** MAIN METHOD **************************/
     
     public static void main (String[] args){
 	//SpeciesWorld world = new SpeciesWorld(10,10,10,10,25,25,10);
-	SpeciesWorld world = new SpeciesWorld();
+	SpeciesWorld world1 = new SpeciesWorld();
+	world1.oneGen(10,2);
+	SpeciesWorld world2 = new SpeciesWorld(world1.nextGenChroms());
+	world2.oneGen(10,2);
+	SpeciesWorld world3 = new SpeciesWorld(world2.nextGenChroms());
+	world3.oneGen(10,2);
+    }
+}
+	/*******PREVIOUS TESTING*************/
+
+	/*
 	System.out.println(world.creatures[0]);
 	//	System.out.println(world.creatures[0].chromosome);
 	//	System.out.println(world.selectAction(world.creatures[0]));
@@ -1009,7 +1278,11 @@ public class SpeciesWorld{
       	world.doAction(world.creatures[0]);
 	System.out.println(world.creatures[0]);
 
-	/*******PREVIOUS TESTING*************/
+
+	*/
+
+
+
 	
 	// System.out.println("start: " + world.monsters[0]);
 	// world.moveMonster(world.monsters[0],world.nearest_creature(world.monsters[0].getLoc()));
@@ -1069,7 +1342,3 @@ public class SpeciesWorld{
 	//     world.creature_array[world.monsters[0].getLoc().getX()][world.monsters[0].getLoc().getX()].kill();
 	// }
 	// System.out.println("third move:" + world.monsters[0]);
-    }
-  
-  
-}
