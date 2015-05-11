@@ -16,7 +16,7 @@
  *          4:west         
  *
  * @author: Jazlyn Akaka
- * @version: 10/5/15
+ * @version: 11/5/15
  */
 
 import java.util.*;
@@ -50,6 +50,73 @@ public class Chromosome{
 	chrome[11] = rand.nextDouble();
 	chrome[12] = rand.nextDouble();
     }
+
+    /** 
+     * CONSTRUCTOR: Creates a new baby chromosome based on chromosomes of previous creatures
+     */
+    public Chromosome(Creature c1, Creature c2){
+	Random rand = new Random();
+	int crossPoint = rand.nextInt(13);
+
+	//crossover implementation
+	for (int i = 0; i<crossPoint; i++){
+	    chrome[i] = c1.chromosome.chrome[i];
+	}
+	for (int j = crossPoint; j<chrome.length; j++){
+	    chrome[j] = c2.chromosome.chrome[j];
+	}
+
+	//generate a random number that represents the location of a mutation
+	//if the random number is greater than 12, there's no mutation
+	//could potentially change the range in the future to make it more likely
+	//or less likely that mutation will happen
+	int mutation = rand.nextInt(20);
+        switch(mutation){
+	case 0:
+	    chrome[0] = eatStrawb[rand.nextInt(eatStrawb.length)];
+	    break;
+	case 1:
+	    chrome[1] = eatMush[rand.nextInt(eatMush.length)];
+	    break;
+	case 2:
+	    chrome[2] = strawbMove[rand.nextInt(strawbMove.length)];
+	    break;
+	case 3:
+	    chrome[3] = mushMove[rand.nextInt(mushMove.length)];
+	    break;
+	case 4:
+	    chrome[4] = monsMove[rand.nextInt(monsMove.length)];
+	    break;
+	case 5:
+	    chrome[5] = creMove[rand.nextInt(creMove.length)];
+	    break;
+	case 6:
+	    chrome[6] = action[rand.nextInt(action.length)];
+	    break;
+	case 7:
+	    chrome[7] = rand.nextDouble();
+	    break;
+	case 8:
+	    chrome[8] = rand.nextDouble();
+	    break;
+	case 9:
+	    chrome[9] = rand.nextDouble();
+	    break;
+	case 10:
+	    chrome[10] = rand.nextDouble();
+	    break;
+	case 11:
+	    chrome[11] = rand.nextDouble();
+	    break;
+	case 12:
+	    chrome[12] = rand.nextDouble();
+	    break;
+	default:
+	    break;
+	}
+	
+    }
+
 
     /************** GETTER METHODS *****************/
     
