@@ -4,7 +4,7 @@
  * Purpose: Create creature objects with an energy level and a location
  * 
  * @author: Jazlyn Akaka
- * @version: 10/5/15
+ * @version: 11/5/15
  */
 
 import java.util.*;
@@ -23,6 +23,18 @@ public class Creature{
 	energy_level = energy;
 	loc = new Location(x,y);
 	chromosome = new Chromosome();
+    }
+
+    /**
+     * CONSTRUCTOR: Creates a Creature with location, starting energy level,
+     * and a chromosome, which determines its actions
+     * @param starting energy level and x and y coordinates for location,
+     * and chromosome from parent creature
+     */
+    public Creature(int energy, int x, int y, Chromosome c){
+	energy_level = energy;
+	loc = new Location(x,y);
+	chromosome = c;
     }
 
     public int getEnergyLevel(){
