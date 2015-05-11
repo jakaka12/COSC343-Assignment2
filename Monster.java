@@ -33,6 +33,7 @@ public class Monster{
     }
     
     public static void main (String[] args){
+	/**TESTING**/
 	Monster frank = new Monster(10,2);
 	System.out.println(frank.loc);
 

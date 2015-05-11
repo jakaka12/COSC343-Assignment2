@@ -37,6 +37,8 @@ public class Creature{
 	chromosome = c;
     }
 
+    /** GETTERS AND SETTERS **/
+
     public int getEnergyLevel(){
 	return energy_level;
     }
@@ -53,6 +55,8 @@ public class Creature{
 	return (energy_level>0);
     }
 
+    /** Method used when creature moves around the world
+     */
     public void loseEnergy(int n){
 	energy_level-=n;
     }
@@ -64,6 +68,8 @@ public class Creature{
 	energy_level = 0;
     }
     
+    /** Method used when a creature eats a strawberry
+     */
     public void gainEnergy(int n){
 	energy_level+=n;
     }
@@ -76,11 +82,9 @@ public class Creature{
     }
     
     public static void main (String[] args){
+	/**TESTING**/
 	Creature gru = new Creature(10,2,2);
 	System.out.println(gru.loc);
 	System.out.println(gru.chromosome);
-
     }
-
-
 }

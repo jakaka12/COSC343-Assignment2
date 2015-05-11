@@ -30,7 +30,7 @@ public class Chromosome{
     private int[] creMove = {0,1,2,3}; //direction to move given a creature
     private int[] action = {0,1,2,3,4}; //default action (random, north, south, east, west)
     private Object[] chrome = new Object[13];
-    //protected int[] weights; //weights associated with the above roles
+
     /** 
      * CONSTRUCTOR: Creates an all encompasing chromosome that provides all possible values for roles
      */
@@ -114,9 +114,17 @@ public class Chromosome{
 	default:
 	    break;
 	}
-	
+	/**TESTING**/
+	/**
+		System.out.println("crossPoint:" + crossPoint);
+		System.out.println("Parent 1:" + c1.chromosome);
+		System.out.println("Parent 2:" + c2.chromosome);
+		System.out.print("child:");
+		for (int i = 0; i<13; i++){
+		System.out.println(chrome[i]);
+		}
+	*/	
     }
-
 
     /************** GETTER METHODS *****************/
     
@@ -190,6 +198,7 @@ public class Chromosome{
     }
 
     public static void main (String[] args){
+	/**TESTING**/
 	Chromosome c = new Chromosome();
 	System.out.println(c);
 	System.out.println(c.getEatStrawb());
