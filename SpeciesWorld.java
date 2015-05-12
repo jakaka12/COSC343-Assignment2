@@ -5,11 +5,12 @@
  * survive by eating strawberries and avoiding mushrooms and monsters.
  * 
  * @author: Jazlyn Akaka
- * @version: 10/5/15
+ * @version: 12/5/15
  */
 
 import java.util.*;
 import java.lang.*;
+import java.io.*;
 
 public class SpeciesWorld{
     public int[][] strawb_array;
@@ -37,7 +38,7 @@ public class SpeciesWorld{
 	numMonsters = 60;
 	numStrawb = 100;
 	numMush = 100; 
-	energy = 20; //starting energy_level of creatures
+	energy = 30; //starting energy_level of creatures
 	energyLoss = 1; //energy lost by moving
 	energyGain = 10; //energy gained by eating a strawberry
     
@@ -343,6 +344,23 @@ public class SpeciesWorld{
      */
     public int getContents(int x, int y){
 	return map[x][y];
+    }
+
+    /**
+     * Method returns the average fitness across the population of creatures
+     * @return a double that is the average fitness (avg energy level)
+     */
+    public double getAvgFitness(){
+	double sum = 0;
+	double popSize = numCreatures;
+	for (int i = 0; i<numCreatures; i++){
+	    double fitness = creatures[i].getEnergyLevel();
+	    if (fitness!=0){
+		sum+=fitness;
+	    }
+	}
+	
+	return sum/popSize;
     }
 
     /******************** SENSORY METHODS **************************/
@@ -782,7 +800,7 @@ public class SpeciesWorld{
      *  @param The creature that will be eating
      */
     public void eat(Creature c){
-	System.out.println("eat before: " + c.getEnergyLevel());
+	//	System.out.println("eat before: " + c.getEnergyLevel());
 	int cX = c.getLoc().getX();
 	int cY = c.getLoc().getY();
 	if (strawb_present(c.getLoc())){
@@ -794,7 +812,7 @@ public class SpeciesWorld{
 	    creature_array[cX][cY]--;
 	    c.kill();
 	}
-	System.out.println("eat after: "  + c.getEnergyLevel());
+	//	System.out.println("eat after: "  + c.getEnergyLevel());
     }
 
     /** A method that helps the creature determine which action to do
@@ -1084,8 +1102,11 @@ public class SpeciesWorld{
      *  @param The number of timeSteps to go through for one population and 
      *  the interval at which monsters should move. The greater the number
      *  the less the monsters will move.
+     *
+     *  @return The average fitness of the population
+     *
      */
-    public void oneGen(int timeSteps, int f){
+    public double oneGen(int timeSteps, int f){
 	int t = timeSteps; //one generation lives for 20 time steps
 	int monsterTime = f; //monsters move when t is divisible by f
 	for (int i = 0; i<t; i++){
@@ -1115,11 +1136,17 @@ public class SpeciesWorld{
 	    }
 	}
 
+	//calculate average fitness
+	double fitnessSum = 0;
+	double popSize = numCreatures;
 	for (int n = 0; n<creatures.length; n++){
-	    System.out.print(creatures[n].getEnergyLevel() + ", ");
+	    int e = creatures[n].getEnergyLevel();
+	    fitnessSum += e;
+	    //	    System.out.print(e + ", ");
 	}
-	System.out.println("");
-
+	//	System.out.println("");
+	double avg = fitnessSum/popSize;
+	return avg;
     }
 
     /** Method calculates fitness of creatures and returns linkedlist of the fittest
@@ -1208,27 +1235,59 @@ public class SpeciesWorld{
 	return babies;
     }
 
+    /******************** METHODS FOR USE WITH THE GUI *******************/
+
+    /** A method that goes through all the creatures and makes them perform
+     *  an action.
+     */
+    public void creatureStep(){
+	for (int j = 0; j<creatures.length; j++){
+	    Creature c = creatures[j];
+	    if (c.isAlive()){
+		doAction(c);
+	    }    
+	}
+    }
+
+    /** A method that goes through all the monsters and makes
+     *  them move.
+     */
+    public void monsterStep(){
+	for (int k = 0; k<monsters.length; k++){
+	    Monster m = monsters[k];
+	    moveMonster(m,nearest_creature(m.getLoc()));
+	    int mX = m.getLoc().getX();
+	    int mY = m.getLoc().getY();
+	    while (creature_array[mX][mY]>0){
+		Creature cre = whichCreature(m.getLoc());
+		cre.kill();
+		creature_array[mX][mY]--;
+	    }
+	}
+    }
+
+
+   
+
     
     /******************** MAIN METHOD **************************/
     
-    public static void main (String[] args){
+    public static void main (String[] args) throws FileNotFoundException{
 	//SpeciesWorld world = new SpeciesWorld(10,10,10,10,25,25,10);
-	SpeciesWorld world = new SpeciesWorld(20,20,75,60,100,100,30);
-	int numGenerations = 30;
+	PrintWriter writer = new PrintWriter(new File("fitnessResults.txt"));
+	SpeciesWorld world = new SpeciesWorld();
+	int numGenerations = 50;
 	int timeSteps = 25;
 	int monsterMovement = 5;//They'll move every 5 timesteps
-	for (int i = 1; i<numGenerations; i++){
-	    System.out.println("Generation " + i);
-	    world.oneGen(timeSteps,monsterMovement);
+	writer.println(world.dimx + " " +  world.dimy + " " +  world.numCreatures + " " +  world.numMonsters + " " +  world.numStrawb + " " + world.numMush + " " +  world.energy);
+	for (int i = 0; i<numGenerations; i++){
+	    //	    System.out.println("Generation " + i);
+	    double avgFit = world.oneGen(timeSteps,monsterMovement);
+	    if (avgFit==0) break;
+	    writer.println(avgFit);
 	    world = new SpeciesWorld(world.nextGenChroms());
 	}
-
-	//	SpeciesWorld world1 = new SpeciesWorld();
-	//	world1.oneGen(10,2);
-	//SpeciesWorld world2 = new SpeciesWorld(world1.nextGenChroms());
-	//world2.oneGen(10,2);
-	//SpeciesWorld world3 = new SpeciesWorld(world2.nextGenChroms());
-	//world3.oneGen(10,2);
+	writer.close();
     }
 }
 
