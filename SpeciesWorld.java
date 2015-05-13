@@ -5,7 +5,7 @@
  * survive by eating strawberries and avoiding mushrooms and monsters.
  * 
  * @author: Jazlyn Akaka
- * @version: 12/5/15
+ * @version: 13/5/15
  */
 
 import java.util.*;
@@ -25,6 +25,9 @@ public class SpeciesWorld{
     public int energyGain;
     public int dimx, dimy, numCreatures, numMonsters, numStrawb, numMush, energy;
     private Location strawbLoc, mushLoc, creLoc, monLoc; //to be used later by selectAction() and doAction()
+    public int numAlive;
+    public static int numEatS, numEatM, numMoveS, numMoveMu, numMoveC, numMoveMo;
+    public static int toS, awayMo;
 
     /**
      * CONSTRUCTOR: Creates a world that is occupied by Creatures, Monsters, strawberries and mushrooms.
@@ -32,16 +35,24 @@ public class SpeciesWorld{
      * 
      */
     public SpeciesWorld(){
-	dimx = 20;
-	dimy = 20;
-        numCreatures = 100;
-	numMonsters = 60;
-	numStrawb = 100;
+	toS = 0;
+	awayMo = 0;
+	numEatS = 0;
+	numEatM = 0;
+	numMoveS = 0;
+	numMoveMu = 0;
+	numMoveC = 0;
+	numMoveMo = 0;
+	dimx = 30;
+	dimy = 30;
+        numCreatures = 50;
+	numMonsters = 15;
+	numStrawb = 500;
 	numMush = 100; 
-	energy = 30; //starting energy_level of creatures
+	energy = 10; //starting energy_level of creatures
 	energyLoss = 1; //energy lost by moving
 	energyGain = 10; //energy gained by eating a strawberry
-    
+	numAlive = numCreatures;
 	Random rand = new Random();
 	creatures = new Creature[numCreatures];
 	babyChroms = new Chromosome[numCreatures];
@@ -121,12 +132,12 @@ public class SpeciesWorld{
 
 	//*******TESTING
 	//print out values in the map to see positions of creatures, monsters, strawberries and mushrooms
-	for (int i = 0; i<dimx; i++){
-	    for (int j = 0; j<dimy; j++){
-		System.out.print(map[j][i]);
-	    }
-	    System.out.println("");
-	}
+	// for (int i = 0; i<dimx; i++){
+	//     for (int j = 0; j<dimy; j++){
+	// 	System.out.print(map[j][i]);
+	//     }
+	//     System.out.println("");
+	// }
     }
 
     /**
@@ -136,16 +147,25 @@ public class SpeciesWorld{
      * with creatures based on the first generation
      */
     public SpeciesWorld(Chromosome[] nextGen){
-	dimx = 20;
-	dimy = 20;
-        numCreatures = 100;
-	numMonsters = 60;
-	numStrawb = 100;
+		toS = 0;
+	awayMo = 0;
+	numEatS = 0;
+	numEatM = 0;
+	numMoveS = 0;
+	numMoveMu = 0;
+	numMoveC = 0;
+	numMoveMo = 0;
+	dimx = 30;
+	dimy = 30;
+        numCreatures = 50;
+	numMonsters = 15;
+	numStrawb = 500;
 	numMush = 100; 
-	energy = 30; //starting energy_level of creatures
+	energy = 10; //starting energy_level of creatures
 	energyLoss = 1; //energy lost by moving
 	energyGain = 10; //energy gained by eating a strawberry
-    
+	numAlive = numCreatures;
+	
 	Random rand = new Random();
 	creatures = new Creature[numCreatures];
 	babyChroms = nextGen;
@@ -216,12 +236,13 @@ public class SpeciesWorld{
 
 	//*******TESTING
 	//print out values in the map to see positions of creatures, monsters, strawberries and mushrooms
-	for (int i = 0; i<dimx; i++){
-	    for (int j = 0; j<dimy; j++){
-		System.out.print(map[j][i]);
-	    }
-	    System.out.println("");
-	}	
+	// for (int i = 0; i<dimx; i++){
+	//     for (int j = 0; j<dimy; j++){
+	// 	System.out.print(map[j][i]);
+	//     }
+	//     System.out.println("");
+	// }
+	
     }
     
     /**
@@ -238,8 +259,9 @@ public class SpeciesWorld{
 	numMush = mush;
 	energy = ene;   //starting energy_level of creatures
 	energyLoss = 1; //energy lost by moving
-	energyGain = 10; //energy gained by eating a strawberry
-    
+	energyGain = 2; //energy gained by eating a strawberry
+	numAlive = numCreatures;
+	
 	Random rand = new Random();
 	creatures = new Creature[numCreatures];
 	babyChroms = new Chromosome[numCreatures];
@@ -310,12 +332,12 @@ public class SpeciesWorld{
 
 	//*******TESTING
 	//print out values in the map to see positions of creatures, monsters, strawberries and mushrooms
-	for (int i = 0; i<dimx; i++){
-	    for (int j = 0; j<dimy; j++){
-		System.out.print(map[j][i]);
-	    }
-	    System.out.println("");
-	}
+	// for (int i = 0; i<dimx; i++){
+	//     for (int j = 0; j<dimy; j++){
+	// 	System.out.print(map[j][i]);
+	//     }
+	//     System.out.println("");
+	// }
 	
     }
 
@@ -352,11 +374,12 @@ public class SpeciesWorld{
      */
     public double getAvgFitness(){
 	double sum = 0;
-	double popSize = numCreatures;
+	double popSize = 0;
 	for (int i = 0; i<numCreatures; i++){
 	    double fitness = creatures[i].getEnergyLevel();
-	    if (fitness!=0){
+	    if (fitness>0){
 		sum+=fitness;
+		popSize++;
 	    }
 	}
 	
@@ -806,13 +829,17 @@ public class SpeciesWorld{
 	if (strawb_present(c.getLoc())){
 	    c.gainEnergy(energyGain);
 	    strawb_array[cX][cY]--;
+	    numEatS++;
 	}
 	if (mushroom_present(c.getLoc())){
 	    mushroom_array[cX][cY]--;
 	    creature_array[cX][cY]--;
 	    c.kill();
+	    numAlive--;
+	    numEatM++;
 	}
-	//	System.out.println("eat after: "  + c.getEnergyLevel());
+	//	if (c.isAlive()) System.out.println(c.chromosome + "eat " + c.getEnergyLevel());
+	//		System.out.println("eat after: "  + c.getEnergyLevel());
     }
 
     /** A method that helps the creature determine which action to do
@@ -917,10 +944,12 @@ public class SpeciesWorld{
 	    eat(c);
 	    break;
 	case 2:
+	    numMoveS++;
 	    //	    System.out.println("move on strawberry");
 	    switch(c.chromosome.getStrawbMove()){
 	    case 1:
 		//		System.out.println("move to strawb");
+		toS++;
 		moveCreatureTo(c,strawbLoc);
 		break;
 	    case 2:
@@ -933,6 +962,7 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 3:
+	    numMoveMu++;
 	    //	    System.out.println("move on mushroom");
 	    switch(c.chromosome.getMushMove()){
 	    case 1:
@@ -940,6 +970,7 @@ public class SpeciesWorld{
 		moveCreatureTo(c,mushLoc);
 		break;
 	    case 2:
+		awayMo++;
 		//		System.out.println("move away from mush");
 		moveCreatureAway(c,mushLoc);
 		break;
@@ -949,6 +980,7 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 4:
+	    numMoveC++;
 	    //	    System.out.println("move on monster");
 	    switch(c.chromosome.getMonsMove()){
 	    case 1:
@@ -965,6 +997,7 @@ public class SpeciesWorld{
 	    }
 	    break;
 	case 5:
+	    numMoveMo++;
 	    //	    System.out.println("move on creature");
 	    switch(c.chromosome.getCreMove()){
 	    case 1:
@@ -1010,6 +1043,7 @@ public class SpeciesWorld{
 	if (monster_array[currentX][currentY]>0){
 	    creature_array[currentX][currentY]--;
 	    c.kill();
+	    numAlive--;
 	}
 	
     }
@@ -1131,6 +1165,7 @@ public class SpeciesWorld{
 			Creature cre = whichCreature(m.getLoc());
 		        cre.kill();
 			creature_array[mX][mY]--;
+			numAlive--;
 		    }
 		}
 	    }
@@ -1160,9 +1195,9 @@ public class SpeciesWorld{
 	LinkedList<Creature> result = new LinkedList<Creature>();
 
 	//fraction of fittest population that will make up the fittest creatures in the population
-	int d = 3;
+	double d = 10;
 	
-	int k = numCreatures/d;
+	double k = numAlive/d;
 
 	Hashtable<Double,Integer> fitMap = new Hashtable<Double,Integer>();
 	//make a new creature array to sort
@@ -1184,13 +1219,15 @@ public class SpeciesWorld{
 	}
 	Arrays.sort(sorted);
 	for (int j = sorted.length-1; j>0; j--){
-	    double fitness = sorted[j];
-	    if (fitness>0.9){
-		int index = fitMap.get(fitness);
-		//		System.out.println("index: " + index);
-
-		result.add(creatures[index]);
-		fitMap.remove(fitness);
+	    if (result.size()<k){
+		double fitness = sorted[j];
+		if (fitness>0.9){
+		    int index = fitMap.get(fitness);
+		    //		System.out.println("index: " + index);
+		    //		System.out.println(creatures[index]);
+		    result.add(creatures[index]);
+		    fitMap.remove(fitness);
+		}
 	    }
 	}
 
@@ -1212,12 +1249,16 @@ public class SpeciesWorld{
 	Random rand = new Random();
 	LinkedList<Creature> fittest = getFittest();
 	int fitSize = fittest.size();
+	//	System.out.println(fitSize);
 	if (fitSize>1){
 	    int p1 = rand.nextInt(fitSize);
 	    int r = rand.nextInt(fitSize);
 	    while (r==p1) r = rand.nextInt(fitSize);
 	    int p2 = r;
 	    result = new Chromosome(fittest.get(p1),fittest.get(p2));
+	    //	    System.out.println("P1:" + fittest.get(p1) + " P2:" + fittest.get(p2));
+	}else{
+	    //	    System.out.println("random gen");
 	}
 	return result;
 	
@@ -1231,6 +1272,7 @@ public class SpeciesWorld{
 	Chromosome[] babies = new Chromosome[numCreatures];
 	for (int i = 0; i<babies.length; i++){
 	    babies[i] = makeBabyChrom();
+	    //	    System.out.println(babies[i]);
 	}
 	return babies;
     }
@@ -1262,6 +1304,7 @@ public class SpeciesWorld{
 		Creature cre = whichCreature(m.getLoc());
 		cre.kill();
 		creature_array[mX][mY]--;
+		numAlive--;
 	    }
 	}
     }
@@ -1276,18 +1319,63 @@ public class SpeciesWorld{
 	//SpeciesWorld world = new SpeciesWorld(10,10,10,10,25,25,10);
 	PrintWriter writer = new PrintWriter(new File("fitnessResults.txt"));
 	SpeciesWorld world = new SpeciesWorld();
-	int numGenerations = 50;
-	int timeSteps = 25;
-	int monsterMovement = 5;//They'll move every 5 timesteps
-	writer.println(world.dimx + " " +  world.dimy + " " +  world.numCreatures + " " +  world.numMonsters + " " +  world.numStrawb + " " + world.numMush + " " +  world.energy);
-	for (int i = 0; i<numGenerations; i++){
-	    //	    System.out.println("Generation " + i);
-	    double avgFit = world.oneGen(timeSteps,monsterMovement);
-	    if (avgFit==0) break;
-	    writer.println(avgFit);
+
+	for (int i = 0; i<10; i++){
+	    for ( int s = 0; s<60; s++){
+		world.creatureStep();
+		if (s%2==0) world.monsterStep();
+	    }
+	    System.out.println("Generation " + i);
+	    System.out.println("eatS:" + numEatS + " eatM:" + numEatM + " moveS:" + numMoveS + " moveMu:" + numMoveMu + " moveC:" + numMoveC + " moveMo:" + numMoveMo );
+	    System.out.println("toS:" + toS + " awayMo:" + awayMo);
+	    // for (int j = 0; j<world.numCreatures; j++){
+	    // 	System.out.println(world.creatures[j].getEnergyLevel());
+	    // }
+	    System.out.println("Average Fitness:" + world.getAvgFitness() + "\n");
 	    world = new SpeciesWorld(world.nextGenChroms());
 	}
-	writer.close();
+
+
+	
+	// int numGenerations = 50;
+	// int timeSteps = 25;
+	// int monsterMovement = 5;//They'll move every 5 timesteps
+	// writer.println(world.dimx + " " +  world.dimy + " " +  world.numCreatures + " " +  world.numMonsters + " " +  world.numStrawb + " " + world.numMush + " " +  world.energy);
+	// for (int i = 0; i<numGenerations; i++){
+	//     //	    System.out.println("Generation " + i);
+	//     double avgFit = world.oneGen(timeSteps,monsterMovement);
+	//     if (avgFit==0) break;
+	//     writer.println(avgFit);
+	//     world = new SpeciesWorld(world.nextGenChroms());
+	// }
+	// writer.close();
+	// for (int i = 0; i<3; i++){ // over 100 generations
+	//     int population = 0;
+	//     if (world.getAvgFitness()>0){
+	// 	for (int s = 0; s<60; s++){ //15 steps per generation
+	// 	    world.creatureStep();
+	// 	    if (s%5==0) world.monsterStep();
+	// 	}
+	// 	int gen = i+1;
+	// 	//	if (i%9==0){
+	// 	    System.out.println("Generation " + gen + " Average Fitness: " + world.getAvgFitness());
+	// 	    for(int j = 0; j<world.numCreatures; j++){
+	// 		Creature c = world.creatures[j];
+	// 		if (c.isAlive()){
+	// 		    population++;
+	// 		}
+	// 	    }
+	// 	    System.out.println("Population size:" + population);
+	// 	    Systme.out.
+	// 		//	}
+	// 	world = new SpeciesWorld(world.nextGenChroms());
+	//     }else{
+	// 	System.out.println("extinct");
+	// 	break;
+	//     }
+	// }
+	
+	
     }
 }
 
