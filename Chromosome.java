@@ -16,7 +16,7 @@
  *          4:west         
  *
  * @author: Jazlyn Akaka
- * @version: 11/5/15
+ * @version: 13/5/15
  */
 
 import java.util.*;
@@ -70,7 +70,7 @@ public class Chromosome{
 	//if the random number is greater than 12, there's no mutation
 	//could potentially change the range in the future to make it more likely
 	//or less likely that mutation will happen
-	int mutation = rand.nextInt(20);
+	int mutation = rand.nextInt(1000);
         switch(mutation){
 	case 0:
 	    chrome[0] = eatStrawb[rand.nextInt(eatStrawb.length)];
